@@ -1,25 +1,20 @@
 #
-# Dockerfile for cpuminer
-# usage: docker run creack/cpuminer --url xxxx --user xxxx --pass xxxx
-# ex: docker run creack/cpuminer --url stratum+tcp://ltc.pool.com:80 --user creack.worker1 --pass abcdef
-#
+# Official Dockerfile for a5a-cpuminer
+# usage: docker run androidcoin-project/a5a-cpuminer --url stratum+tcp://SERVER:PORT --user WALLET --pass X
 #
 
-FROM		ubuntu:12.10
-MAINTAINER	Guillaume J. Charmes <guillaume@charmes.net>
+FROM  ubuntu:17.10
 
-RUN		apt-get update -qq
+RUN  apt-get update -qq && apt-get upgrade -y
 
-RUN		apt-get install -qqy automake
-RUN		apt-get install -qqy libcurl4-openssl-dev
-RUN		apt-get install -qqy git
-RUN		apt-get install -qqy make
+RUN  apt-get install -qqy autotools-dev autotools-dev \
+  automake git build-essential libgmp3-dev \
+  libcurl4-openssl-dev libboost-all-dev
 
-RUN		git clone https://github.com/pooler/cpuminer
+RUN  git clone https://github.com/androidcoin-project/a5a-cpuminer.git
 
-RUN		cd cpuminer && ./autogen.sh
-RUN		cd cpuminer && ./configure CFLAGS="-O3"
-RUN		cd cpuminer && make
+WORKDIR  /a5a-cpuminer
 
-WORKDIR		/cpuminer
-ENTRYPOINT	["./m-minerd"]
+RUN  ./autogen.sh && ./configure CFLAGS="-O3" CXXFLAGS="-O3" && make
+
+ENTRYPOINT  ["/a5a-cpuminer/minerd"]
